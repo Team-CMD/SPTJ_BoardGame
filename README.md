@@ -8,6 +8,7 @@
   ### Goal of Project
    >> CMD Toy Project의 하나로써, 방송프로그램 '더 지니어스'와 같이 다수가 즐길수 있는 보드게임을 gui형태로 구현해보는 프로젝트입니다!
 
+  ▶ 자세한 프로젝트의 진행과정과 세부내용은 [GUI_BoardGame]()을 확인하시길 바랍니다! :)
 ___ 
 ## 💻 Programming Skill Stacks
   #### 👓 Programming Stacks  
@@ -26,5 +27,4 @@ ___
    | Developer | Member | develop | [PerfumedHandEssence](https://github.com/PerfumedHandEssence) |  
    | Developer | Member | develop | [CHO_MJ](https://github.com/cood5199) |  
    | Developer | Member | develop | [skm0619](https://github.com/skm0619) |  
-   | Developer | Member | develop | [병근](https://github.com/Dejong1706) |     
 
