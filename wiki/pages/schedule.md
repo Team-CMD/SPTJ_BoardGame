@@ -17,3 +17,7 @@
     Date : 2021. 03. 17.
     Contents : 2차 회의
     participants : GUI-BoardGame Team(5) - 이상엽, 신경민, 조민준, 이승현, 최형순
+    
+    Date : 2021. 04. 03.
+    Contents : 3차 회의
+    participants : GUI-BoardGame Team(5) - 이상엽, 신경민, 조민준, 이승현, 최형순
