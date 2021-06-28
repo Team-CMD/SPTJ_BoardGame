@@ -825,7 +825,7 @@ if __name__=="__main__":
     while True:
       print("삭제할 카드의 인덱스를 입력(0~):",end=' ')
       N = int(input())
-      if N > 0 and N < 4:
+      if N >= 0 and N < 4:
           break
       else:
           print("숫자범위에 벗어났습니다. 다시 입력해주세요.\n")
@@ -840,7 +840,7 @@ if __name__=="__main__":
       print("최초로 오픈할 카드의 인덱스를 입력(0~): ",end=' ')
       usernum = int(input())
       
-      if usernum > 0 and usernum < 3:
+      if usernum >= 0 and usernum < 3:
         break
       else:
         print("숫자범위에 벗어났습니다. 다시 입력해주세요.\n")
