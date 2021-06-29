@@ -3,17 +3,15 @@ import sys
 
 person = 2
 M = 100000
-M1 = 0
 pattern = ['C','H','D','S']
 availableCard = [[i,j]for i in pattern for j in range(1,14)]
 cardList=[[] for _ in range (person)]    # 플레이어 카드 
 Player_Money = [M]*person                # 나 자신과 컴퓨터 게임 머니
-myBetting = [M1]*person # 각 플레이어가 얼마나 배팅을 하였는지(개인 배팅액 저장소)
+myBetting = [0]*person # 각 플레이어가 얼마나 배팅을 하였는지(개인 배팅액 저장소)
 Betting_Status = ["common"]*person # common, all, die
 race = 1 # 배팅의 시작인지 아닌지 구분하기 위해.    
 Table_Money = 0
 seed_Money = 300                       # 시작 배팅 금액
-Table_Money = 0                          # 테이블에 배팅된 머니
 Opened_Card = [] # 오픈된 카드 (민준)
 Priority = {'S': 4 , 'D' : 3, 'H': 2 , 'C': 1} # 패턴별 우선순위
 die_win = 0 # die
@@ -21,19 +19,33 @@ die_win = 0 # die
 def roll():
     # 카드 뭉치?에서 랜덤으로 뽑아
     # 플레이어 카드 리스트에 카드 정보를 넣는 함수
-
     for i in range(person):
-        tmp = random.randrange(1, len(availableCard))
+        tmp = random.randrange(len(availableCard))
         cardList[i].append(availableCard[tmp])
         availableCard.pop(tmp)
     return
-    
-def Player_Card_Print():
+
+def DataInit():
+  global Betting_Status
+  global Table_Money
+  global myBetting
+  global die_win
+  global seed_Money
+  global race
+
+  myBetting = [0]*person
+  Betting_Status = ["common"]*person
+  Table_Money = 0
+  die_win = 0
+  seed_Money = 300
+  race = 1
+
+def Player_Card_Print(card):
     for i in range(person):
         if i == 0:
-            print("playerCard: ", cardList[i])
+            print("\nplayer OpenCards: ", card[i])
         else:
-            print("computerCard"+str(i),":", cardList[i])
+            print("computer OpenCards:", card[i])
     print("\n")
 #==============================================================================================
 # 포카드(무늬는 다르지만 같은 숫자 4개)
@@ -230,7 +242,8 @@ def Progress(temp,last,next,bettingEnd): # 배팅함수에 필요
       die_win = 3
       for k in range(0, person):
         if Betting_Status[k] != "die":
-          print(k+1,"번 플레이어님이 우승하셨습니다!!") 
+          print(k+1,"번 플레이어님이 우승하셨습니다!!")
+          Player_Money[k] += Table_Money
       return bettingEnd, next
 
     if race == 1 and temp == last: # 1)첫배팅의 마지막 순서 인덱스라면
@@ -810,40 +823,98 @@ def flush(shape):
             break
     return index, m
 
-if __name__=="__main__":
+def Interpace():
+  print("┌───────────────────────────────────────────────────────────────────────┐")
+  print("\t\t\t\t[세븐 포커]\t\t\t\t")
+  print("\t\t\t\t\t\t\t\t\t")
+  print("\t1. 게임 시작\t\t2. 규칙 설명\t\t3.게임 종료\t")
+  print("└───────────────────────────────────────────────────────────────────────┘")
+  while True:
+    try:
+      N = int(input("메뉴 선택 : "))
+      if 0 < N and N < 4:
+        break
+      else:
+        print("\n메뉴를 다시 선택해주세요.\n")
+    except:
+      print("\n정수 값이 아닙니다\n")
 
+  return N
+
+def Rule():
+  print("1. 카드 및 족보 우선순위\n")
+  print(" - 탑 : 어떠한 조합도 이루어지지 않은 상태.")
+  print(" - 원페어 : 같은 숫자의 카드가 두 장인 조합.")
+  print(" - 투페어 : 각기 다른 원페어가 두 쌍인 조합.")
+  print(" - 트리플 : 같은 숫자의 카드가 세 장인 조합.")
+  print(" - 스트레이트 : 연속된 숫자 카드가 5장인 조합.")
+  print(" - 백스트레이트 : 스트레이트 중, A, 2, 3, 4, 5의 숫자 카드 조합.")
+  print(" - 마운틴 : 스트레이트 중, 10, J, 1, K, A의 숫자 카드 조합.")
+  print(" - 플러쉬 : 무늬가 같은 다섯장의 카드 조합.")
+  print(" - 풀하우스 : 하나의 원페어와 하나의 트리플의 조합.")
+  print(" - 포카드 : 같은 숫자의 카드가 네 장인 조합.")
+  print(" - 스트레이트 플러쉬 : 스트레이트이면서 플러쉬가 되는 카드 조합.")
+  print(" - 백스트레이트 플러쉬 : 백스트레이트이면서 플러쉬가 되는 카드 조합.")
+  print(" - 로얄 스트레이트 플러쉬 : 마운틴이면서 플러쉬가 되는 카드 조합.\n")
+  print(" * 클로버 < 하트 < 다이아몬드 < 스페이드\n  (같은 족보일 경우, 문양 또는 가장 높은 숫자 비교로 우선순위를 따진다.)\n\n\n")
+  print("2. 진행\n")
+  print(" 1) 각 플레이어는 시드머니를 배팅하고 카드 네 장을 받으며 게임에 참여합니다.")
+  print(" 2) 받은 카드 중 버릴 카드와 상대에게 오픈할 카드를 한 장씩, 고릅니다.")
+  print(" 3) 오픈된 카드를 비교하여 가장 높은 족보를 가진 사람부터 시계방향으로 배팅을 시작합니다.\n    이때, 마지막 사람이 배팅을 끝냈을 때, 모두가 지불한 배팅액이 같다면 배팅을 종료하고, 그렇지 않다면\n    배팅을 다시 이어나갑니다.")
+  print(" 4) 배팅이 끝나면 각 플레이어는 오픈된 카드 한 장을 받습니다.")
+  print(" 5) 자신이 가진 카드가 6장이 될 때까지, 3)과 4)의 과정을 반복합니다.")
+  print(" 6) 6장의 카드를 가지고 배팅이 끝나면 자신만 보이는 히든 카드 한 장을 받고 마지막 배팅을 합니다.")
+  print(" 7) 각 플레이어는 자신이 가진 7장의 카드를 모두 비교하여 최종 승자를 가려냅니다.\n\n\n")
+  print("3. 배팅 용어\n")
+  print(" - 삥 : 기본 판돈을 배팅한다.")
+  print(" - 체크 : 배팅을 하지 않고 다음 사람에게 권한을 넘긴다.")
+  print(" - 콜 : 앞 사람의 배팅금과 같도록 배팅한다.")
+  print(" - 하프 : 판돈의 절반을 배팅한다.")
+  print(" - 따당 : 앞사람의 두 배를 배팅한다.")
+  print(" - 다이 : 해당 판을 포기한다.")
+  print(" - 올인 : 남은 돈을 모두 배팅한다.")
+
+def PokerGamePlay():
+    global die_win
+    global myBetting
     Betting_SeedMoney(Player_Money,myBetting)
 
     for _ in range(4):
-        roll()
+      roll()
 
     cardList[0].sort()
     cardList[1].sort()
 
-    Player_Card_Print()
+    print("\nplayerCard: ", cardList[0])
 
     while True:
-      print("삭제할 카드의 인덱스를 입력(0~):",end=' ')
-      N = int(input())
-      if N >= 0 and N < 4:
-          break
-      else:
-          print("숫자범위에 벗어났습니다. 다시 입력해주세요.\n")
+      try:
+        print("\n삭제할 카드의 인덱스를 입력(0~3):",end=' ')
+        N = int(input())
+        if N >= 0 and N < 4:
+            break
+        else:
+            print("숫자범위에 벗어났습니다. 다시 입력해주세요.\n")
+      except:
+        print("정수가 아닙니다. 다시입력해주세요.\n")
 
     cardList[0].pop(N)
     cardList[1].pop(random.randrange(0,len(cardList[1])))
 
-    Player_Card_Print()
+    print("\nplayerCard: ", cardList[0])
 
     comnum = random.randrange(0,3)
     while True:
-      print("최초로 오픈할 카드의 인덱스를 입력(0~): ",end=' ')
-      usernum = int(input())
-      
-      if usernum >= 0 and usernum < 3:
-        break
-      else:
-        print("숫자범위에 벗어났습니다. 다시 입력해주세요.\n")
+      try:
+        print("최초로 오픈할 카드의 인덱스를 입력(0~2):",end=' ')
+        usernum = int(input())
+        
+        if usernum >= 0 and usernum < 3:
+          break
+        else:
+          print("숫자범위에 벗어났습니다. 다시 입력해주세요.\n")
+      except:
+        print("정수가 아닙니다. 다시입력해주세요.\n")
     
     print("player first Open Card : ", cardList[0][usernum])
     print("computer first Open Card : ", cardList[1][comnum], '\n')
@@ -869,25 +940,25 @@ if __name__=="__main__":
         PSOCard = random.choice(availableCard)
         availableCard.pop(availableCard.index(PSOCard))
 
-    print("player second Open Card : ", PSOCard)
-    print("computer second Open Card : ", CSOCard)
+    print("player get Card : ", PSOCard)
+    print("computer get Card : ", CSOCard)
     # ===========================================================
     # 일단은 반복문 안돌리고 하나하나 복붙하였음.
     # ===========================================================
     Opened_Card[0].append(PSOCard)
     Opened_Card[1].append(CSOCard)
-    print(Opened_Card, '\n')
+    Player_Card_Print(Opened_Card)
 
-    for j in range(3,7):
-          if(j < 6):
+    for j in range(3,6):
+          if(j < 5):
                 priority = Card_Priority()
           else:
                 priority = Card_Compare(Opened_Card)
           if priority == 0:#유저 선
-              print(str(j) + "번째 player first")
+              print(str(j) + "번째 판 player first")
               Betting_System(0)
               if die_win == 3:
-                  sys.exit()
+                break
               PSOCard = random.choice(availableCard)
               availableCard.pop(availableCard.index(PSOCard))
               CSOCard = random.choice(availableCard)
@@ -896,26 +967,48 @@ if __name__=="__main__":
               print(str(j) + "번째 판 computer first")
               Betting_System(1)
               if die_win == 3:
-                  sys.exit()              
+                break           
               CSOCard = random.choice(availableCard)
               availableCard.pop(availableCard.index(CSOCard))
               PSOCard = random.choice(availableCard)
               availableCard.pop(availableCard.index(PSOCard))
+          
+          if (j < 5):
+            print("player get Card : ", PSOCard)
+            print("computer get Card : ", CSOCard)
+            Opened_Card[0].append(PSOCard)
+            Opened_Card[1].append(CSOCard)
+          else:
+            print("player Hidden Card : ", PSOCard)
+            cardList[0].append(PSOCard)
+            cardList[1].append(CSOCard)
+          
+          Player_Card_Print(Opened_Card)
 
-          print("player second Open Card : ", PSOCard)
-          print("computer second Open Card : ", CSOCard)
-          Opened_Card[0].append(PSOCard)
-          Opened_Card[1].append(CSOCard)
-          print(Opened_Card,'\n')
+    if die_win == 3:
+      DataInit()
 
-    print("playerCard(엎어져있는 카드) :", cardList[0])
-    print("playerCard(공개된 카드) : ",Opened_Card[0])
-    print("computerCard(엎어져있는 카드) :", cardList[1])
-    print("computerCard(공개된 카드) : ",Opened_Card[1])
-
-    for i in range(person):
+    else:
+      for i in range(person):
         cardList[i] = cardList[i] + Opened_Card[i]
         cardList[i].sort()
+      print("player finally openCards:",cardList[0])
+      print("computer finally openCards:",cardList[1])
+      winner = Card_Compare(cardList)
+      Player_Money[winner] += Table_Money
+      print(str(winner+1)+"번 플레이어님이 우승하셨습니다.")
+      
 
-    winner = Card_Compare(cardList)
-    print(str(winner+1)+"번 플레이어님이 우승하셨습니다.")
+if __name__ == "__main__":
+  while True:
+    menu = Interpace()
+    if menu == 1:
+      for i in range(person):
+        cardList[i].clear()
+        Opened_Card.clear()
+      DataInit()
+      PokerGamePlay()
+    elif menu == 2:
+      Rule()
+    else:
+      break

@@ -122,7 +122,7 @@ def PrintCard():
     print("공유된 카드 : ",share_Card)
     print("상대방 카드 : ",computer_Card)
 
-def GamePlay():
+def HoldomGamePlay():
     drow = 0
     owner = 0
     table_Chip=0
@@ -187,6 +187,7 @@ def GamePlay():
         
         elif owner == 1:#컴퓨터가 선 이라서 사람이 콜,레이즈,다이 고름
             kk = True
+            
             while kk:
                 BN = int(input('배팅금액(콜- 같은값, 레이즈- 더높은 수, 다이-0): '))
                 if BN == t:
@@ -309,7 +310,7 @@ if __name__ == "__main__":
         if menu == 1:
             chip = [50, 50]
             cardList.clear()
-            GamePlay()
+            HoldomGamePlay()
         elif menu == 2:
             Rule()
         else:
