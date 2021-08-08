@@ -3,6 +3,8 @@
 </p>
 <h1 align="center">GUI_BoardGame</h1>
 
+## `This Project is Fail and Finished`
+
 ## 📃 Introduce for GUI_BoardGame
   > 해당 프로젝트는 **Team CMD**의 활동중 하나인 `SPTJ`의 결과물입니다.
   ### Goal of Project
